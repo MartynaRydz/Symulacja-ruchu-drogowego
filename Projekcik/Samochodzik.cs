@@ -21,15 +21,15 @@ public class Samochodzik
 
         SamochodzikImage = new Image
         {
-            Width = 100,  // szerokość samochodzika
-            Height = 100,  // wysokość samochodzika
+            Width = 110,  // szerokość samochodzika
+            Height = 110,  // wysokość samochodzika
         };
 
         SamochodzikowaPredkosc = random.Next(4, 8); //losowanie prędkości od 1 do 5
 
         if (Kieruneczek == 0)
         {
-            Y = 250;
+            Y = 580;
             X = 1200;
             SamochodzikowaPredkosc = -SamochodzikowaPredkosc;
             (SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodLewo.png"));
