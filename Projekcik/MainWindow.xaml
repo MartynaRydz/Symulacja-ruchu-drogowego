@@ -12,7 +12,7 @@
             <ColumnDefinition Width="430"/>
         </Grid.ColumnDefinitions>
         <!-- Canvas z mapą -->
-        <Canvas x:Name ="tloCiuf"  Grid.Column="0" Width="1050" Height="790">
+        <Canvas x:Name ="tloDroga"  Grid.Column="0" Width="1050" Height="790">
             <Canvas.Background>
                 <ImageBrush ImageSource="items/mapa_v5.png" Stretch="Uniform"/>
             </Canvas.Background>
