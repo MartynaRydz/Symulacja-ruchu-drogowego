@@ -18,7 +18,6 @@ public class CiufCiuf
     {
         Kieruneczek = random.Next(0, 2);
 
-        // Zamiana na Image zamiast Rectangle
         CiufciufImage = new Image
         {
             Width = 350,  // szerokość ciufci

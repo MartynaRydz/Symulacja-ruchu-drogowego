@@ -10,7 +10,7 @@ public class Samochodzik
 {
     public double X { get; set; }
     public double Y { get; set; }
-    public int Kieruneczek { get; set; } // 1 - prawo, 0 - lewo
+    public int Kieruneczek { get; set; } // 0 - góra, 1 - prawo, 2 - dół, 3 - lewo
     public UIElement SamochodzikImage { get; set; }
     public int SamochodzikowaPredkosc { get; set; }
     private Random random = new Random();
@@ -21,24 +21,25 @@ public class Samochodzik
 
         SamochodzikImage = new Image
         {
-            Width = 110,  // szerokość samochodzika
-            Height = 110,  // wysokość samochodzika
+            Width = 100,  // szerokość samochodzika
+            Height = 80,  // wysokość samochodzika
         };
 
-        SamochodzikowaPredkosc = random.Next(4, 8); //losowanie prędkości od 1 do 5
+        SamochodzikowaPredkosc = random.Next(4, 8); //losowanie prędkości 
 
         if (Kieruneczek == 0)
         {
-            Y = 580;
+            Y = 590;
             X = 1200;
-            SamochodzikowaPredkosc = -SamochodzikowaPredkosc;
+            
             (SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodLewo.png"));
             (SamochodzikImage as Image).Stretch = Stretch.Uniform;
         }
         else if (Kieruneczek == 1)
         {
-            Y = 200;
+            Y = 220;
             X = -200;
+            
             (SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodPrawo.png"));
             (SamochodzikImage as Image).Stretch = Stretch.Uniform;
         }

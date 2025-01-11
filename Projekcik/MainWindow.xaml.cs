@@ -1,164 +1,194 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using System.Windows.Threading;
+using System.Diagnostics;
+using System.Linq;
 
-namespace Projekcik;
-
-public partial class MainWindow : Window
+namespace Projekcik
 {
-    private Random _random = new Random();
-    private DispatcherTimer _ciufciufTimer; //timer do obsługi ruchu ciufci
-    private CiufCiuf _ciufciuf;
-    private DispatcherTimer _samochodzikTimer; //timer do obsługi ruchu aut
-    private Samochodzik _samochodzik;
-    private bool _isMoving; //czy pojazdy jest w ruchu
-    private int _tloDrogaWidth;
-    private int _ciufciufWidth;
-    private int _samochodzikWidth;
+    public partial class MainWindow : Window
+    {
+        private Random _random = new Random();
+        private bool _isMoving;  //czy ciufcia się porusza
+        Thread ciufciaThread;
+        Thread[] samochodzikThread;
 
-    public MainWindow()
-    {
-        InitializeComponent();
-        InitializeCiufTimer();
-        InitializeSamochodzikTimer();
-        _isMoving = false;
-    }
-    #region InitializeTimer
-    private void InitializeCiufTimer()
-    {
-        //inicjalizacja timera
-        _ciufciufTimer = new DispatcherTimer
+        readonly List<Tuple<int, int>> kierunekIDystansPrawo = new List<Tuple<int, int>>()
+            {
+                Tuple.Create(1, 950),  //prawo1
+                Tuple.Create(2, 1505),  //dół1 5niz
+                Tuple.Create(3, 720),  //lewo 700
+                Tuple.Create(2, 250),  //dół2 5niz
+                Tuple.Create(1, 950)   //prawo2kbj
+            };
+
+        readonly List<Tuple<int, int>> kierunekIDystansLewo = new List<Tuple<int, int>>()
+            {
+                Tuple.Create(3, 1080),  //lewo1
+                Tuple.Create(0, 165),   //góra1
+                Tuple.Create(1, 670),   //prawo
+                Tuple.Create(0, 250),   //góra2
+                Tuple.Create(3, 1000)    //lewo2
+            };
+
+        public MainWindow()
         {
-            Interval = TimeSpan.FromMilliseconds(30)
-        };
-        _ciufciufTimer.Tick += CiufciufTimer_Tick; //obsługa zdarzenia tick
-    }
-    private void InitializeSamochodzikTimer()
-    {
-        //inicjalizacja timera
-        _samochodzikTimer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromMilliseconds(30)
-        };
-        _samochodzikTimer.Tick += SamochodzikTimer_Tick; //obsługa zdarzenia tick
-    }
-    #endregion
-    #region Ciufcia
-    private void CiufciaJedzie()
-    {
-        _ciufciuf = new CiufCiuf();
-
-        tloDroga.Children.Add(_ciufciuf.CiufciufImage);
-
-        // pobranie szerokości obszaru tła i ciufci
-        _tloDrogaWidth = (int)tloDroga.Width;
-        _ciufciufWidth = (int)(_ciufciuf.CiufciufImage as FrameworkElement).Width;
-
-        // ustawienie początkowej pozycji na Canvas
-        Canvas.SetLeft(_ciufciuf.CiufciufImage, _ciufciuf.X);
-        Canvas.SetTop(_ciufciuf.CiufciufImage, _ciufciuf.Y);
-
-        _ciufciufTimer.Start();
-    }
-
-    private void CiufciufTimer_Tick(object sender, EventArgs e)
-    {
-        if (_ciufciuf == null) return;
-
-        // poruszanko
-        _ciufciuf.X += _ciufciuf.CiufciowaPredkosc;
-
-        // aktualizacja pozycji ciufci na canvas
-        Canvas.SetLeft(_ciufciuf.CiufciufImage, _ciufciuf.X);
-
-        // czy ciufcia wyjechała poza ekran
-        if ((_ciufciuf.Kieruneczek == 0 && _ciufciuf.X < -_ciufciufWidth) ||
-            (_ciufciuf.Kieruneczek == 1 && _ciufciuf.X > _tloDrogaWidth))
-        {
-            // zatrzymanie timera i usunięcie ciufci
-            _ciufciufTimer.Stop();
-            tloDroga.Children.Remove(_ciufciuf.CiufciufImage);
-            _ciufciuf = null;
-
-            // losowanie czasu przed kolejną ciufcią
-            int opuznienieCiuf = _random.Next(5, 11) * 1000;
-            Task.Delay(opuznienieCiuf).ContinueWith(_ => Dispatcher.Invoke(CiufciaJedzie));
+            InitializeComponent();
+            _isMoving = false;
         }
-    }
-    #endregion
-    #region Samochodzik
-    private void SamochodzikJedzie()
-    {
-        _samochodzik = new Samochodzik();
-
-        tloDroga.Children.Add(_samochodzik.SamochodzikImage);
-
-        // Pobranie szerokości obszaru tła i samochodziku
-        _tloDrogaWidth = (int)tloDroga.Width;
-        _samochodzikWidth = (int)(_samochodzik.SamochodzikImage as FrameworkElement).Width;
-
-        // Ustawienie początkowej pozycji na Canvas
-        Canvas.SetLeft(_samochodzik.SamochodzikImage, _samochodzik.X);
-        Canvas.SetTop(_samochodzik.SamochodzikImage, _samochodzik.Y);
-
-        _samochodzikTimer.Start();
-    }
-
-
-    private void SamochodzikTimer_Tick(object sender, EventArgs e)
-    {
-        if (_samochodzik == null) return;
-
-        // Poruszanko
-        _samochodzik.X += _samochodzik.SamochodzikowaPredkosc;
-
-        // Aktualizacja pozycji samochodziku na Canvas
-        Canvas.SetLeft(_samochodzik.SamochodzikImage, _samochodzik.X);
-
-        // Czy samochodzik wyjechał poza ekran
-        if ((_samochodzik.X < -_samochodzikWidth && _samochodzik.Kieruneczek == 0) ||
-            (_samochodzik.X > _tloDrogaWidth && _samochodzik.Kieruneczek == 1))
+        #region CiufCiuf
+        private void CiufciaJedzie()
         {
-            // Zatrzymanie timera i usunięcie samochodziku
-            _samochodzikTimer.Stop();
-            tloDroga.Children.Remove(_samochodzik.SamochodzikImage);
-            _samochodzik = null;
 
-            // Losowanie czasu przed kolejnym samochodzikiem
-            int opoznienieSamochodzik = _random.Next(5, 11) * 1000;
-            Task.Delay(opoznienieSamochodzik).ContinueWith(_ => Dispatcher.Invoke(SamochodzikJedzie));
+            while (_isMoving)
+            {
+                CiufCiuf ciufciuf = null;
+                int tloDrogaWidth = 0;
+                int ciufciufWidth = 0;
+
+                Dispatcher.Invoke(() =>
+                {
+                    ciufciuf = new CiufCiuf();
+                    tloDroga.Children.Add(ciufciuf.CiufciufImage);// dodajemy ciufciuf (image) na canvas
+                    tloDrogaWidth = (int)tloDroga.Width;
+                    ciufciufWidth = (int)(ciufciuf.CiufciufImage as FrameworkElement).Width;
+                    Canvas.SetLeft(ciufciuf.CiufciufImage, ciufciuf.X);
+                    Canvas.SetTop(ciufciuf.CiufciufImage, ciufciuf.Y);
+                });
+
+
+                for (int i = 0; i < tloDrogaWidth + ciufciufWidth * 2; i += Math.Abs(ciufciuf.CiufciowaPredkosc))
+                {
+                    ciufciuf.X += ciufciuf.CiufciowaPredkosc;
+                    Dispatcher.Invoke(() =>
+                    {
+                        Canvas.SetLeft(ciufciuf.CiufciufImage, ciufciuf.X);
+                        Canvas.SetTop(ciufciuf.CiufciufImage, ciufciuf.Y);
+                    });
+                    Thread.Sleep(50);
+                }
+
+                Dispatcher.Invoke(() => tloDroga.Children.Remove(ciufciuf.CiufciufImage));
+
+                Thread.Sleep(_random.Next(2, 5) * 1000);
+
+            }
         }
-    }
 
-    #endregion
-
-    private void StartButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_isMoving) return; //zapobiega wielokrotnemu uruchamianiu
-        _isMoving = true;
-        CiufciaJedzie();
-        SamochodzikJedzie();
-    }
-
-    private void StopButton_Click(object sender, RoutedEventArgs e)
-    {
-        _ciufciufTimer.Stop();
-        _samochodzikTimer.Stop();
-        _isMoving = false;
-
-        // usunięcie istniejącej ciufci
-        if (_ciufciuf != null)
+        // 0 - góra, 1 - prawo, 2 - dół, 3 - lewo
+        #endregion
+        private void SamochodzikJedzie()
         {
-            tloDroga.Children.Remove(_ciufciuf.CiufciufImage);
-            _ciufciuf = null;
+            while (_isMoving)
+            {
+                List<Tuple<int, int>> obecneJechanko = _random.Next(1, 3) == 1 ? kierunekIDystansLewo : kierunekIDystansPrawo;
+                Samochodzik samochodzik = null;
+                int tloDrogaWidth = 0;
+                int smochodzikWidth = 0;
+
+                Dispatcher.Invoke(() =>
+                {
+                    samochodzik = new Samochodzik();
+                    tloDroga.Children.Add(samochodzik.SamochodzikImage);// dodajemy ciufciuf (image) na canvas
+                    tloDrogaWidth = (int)tloDroga.Width;
+                    smochodzikWidth = (int)(samochodzik.SamochodzikImage as FrameworkElement).Width;
+                    Canvas.SetLeft(samochodzik.SamochodzikImage, samochodzik.X);
+                    Canvas.SetTop(samochodzik.SamochodzikImage, samochodzik.Y);
+                });
+
+                foreach (var odcinekDrogi in obecneJechanko)
+                {
+                    Dispatcher.Invoke(() => tloDroga.Children.Remove(samochodzik.SamochodzikImage));
+                    switch (odcinekDrogi.Item1)
+                    {
+                        case 0:
+                            Dispatcher.Invoke(() => (samochodzik.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodGora.png")));
+                            Dispatcher.Invoke(() => (samochodzik.SamochodzikImage as Image).Stretch = Stretch.Uniform);
+                            break;
+
+                        case 1:
+                            Dispatcher.Invoke(() => (samochodzik.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodPrawo.png")));
+                            Dispatcher.Invoke(() => (samochodzik.SamochodzikImage as Image).Stretch = Stretch.Uniform);
+                            break;
+
+                        case 2:
+                            Dispatcher.Invoke(() => (samochodzik.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodDol.png")));
+                            Dispatcher.Invoke(() => (samochodzik.SamochodzikImage as Image).Stretch = Stretch.Uniform);
+                            break;
+
+                        case 3:
+                            Dispatcher.Invoke(() => (samochodzik.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodLewo.png")));
+                            Dispatcher.Invoke(() => (samochodzik.SamochodzikImage as Image).Stretch = Stretch.Uniform);
+                            break;
+
+                    }
+
+                    Dispatcher.Invoke(() => tloDroga.Children.Add(samochodzik.SamochodzikImage));
+
+                    for (int i = 0; i < odcinekDrogi.Item2; i += Math.Abs(samochodzik.SamochodzikowaPredkosc))
+                    {
+                        Debug.WriteLine("Niby działam");
+                        switch (odcinekDrogi.Item1)
+                        {
+                            case 0: //gora
+                                samochodzik.Y -= samochodzik.SamochodzikowaPredkosc;
+                                break;
+
+                            case 1: //prawo
+                                samochodzik.X += samochodzik.SamochodzikowaPredkosc;
+                                break;
+
+                            case 2: //dol
+                                samochodzik.Y += samochodzik.SamochodzikowaPredkosc;
+                                break;
+
+                            case 3://lewo
+                                samochodzik.X -= samochodzik.SamochodzikowaPredkosc;
+                                break;
+                        }
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            Canvas.SetLeft(samochodzik.SamochodzikImage, samochodzik.X);
+                            Canvas.SetTop(samochodzik.SamochodzikImage, samochodzik.Y);
+                        });
+                        Thread.Sleep(50);
+                    }
+                }
+
+            }
         }
-        // usunięcie istniejącej samochodu
-        if (_samochodzik != null)
+
+        private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            tloDroga.Children.Remove(_samochodzik.SamochodzikImage);
-            _samochodzik = null;
+            if (_isMoving) return;
+            _isMoving = true;
+            ciufciaThread = new Thread(CiufciaJedzie);
+            //samochodzikThread = new Thread(SamochodzikJedzie);
+            ciufciaThread.Start();
+            //samochodzikThread.Start();
+            samochodzikThread = new Thread[5];
+            for (int i = 0; i < 5; i++)
+            {
+                samochodzikThread[i] = new Thread(SamochodzikJedzie);
+                samochodzikThread[i].Name = $"samochodzik {i + 1}";
+                samochodzikThread[i].Start();
+            }
+        }
+
+
+        private async void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            _isMoving = false;
+            await Task.Run(() => ciufciaThread?.Join());
+            for (int i = 0; i < 5; i++)
+            {
+                await Task.Run(() => samochodzikThread[i]?.Join());
+            }
+            //await Task.Run(() => samochodzikThread?.Join());
+            Dispatcher.Invoke(() => { tloDroga.Children.Clear(); });
         }
     }
 }
