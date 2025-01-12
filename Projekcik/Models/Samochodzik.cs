@@ -12,10 +12,12 @@ public class Samochodzik
 {
     public double X { get; set; }
     public double Y { get; set; }
-    public Kieruneczek kieruneczek { get; set; }
+    public Kieruneczek Kieruneczek { get; set; }
     public Kieruneczek KieruneczekDrogi { get; set; }  
     public UIElement SamochodzikImage { get; set; }
+    public int ObecnySegment { get; set; }
     public int SamochodzikowaPredkosc { get; set; }
+    public int PrzejechanaOdlegloscWSegmencie { get; set; }
     private Random random = new Random();
 
     public Samochodzik()
@@ -26,11 +28,13 @@ public class Samochodzik
             Height = 80,  // wysokość samochodzika
         };
 
+        ObecnySegment = 0;
+        PrzejechanaOdlegloscWSegmencie = 0;
+
         SamochodzikowaPredkosc = random.Next(4, 8); //losowanie prędkości 
 
         int randomValue = random.Next(0, 2);  // Losuje 0 lub 1
         Kieruneczek startKieruneczek = (randomValue == 0) ? Kieruneczek.Lewo : Kieruneczek.Prawo;
-
 
         if (startKieruneczek == Kieruneczek.Lewo)
         {
@@ -49,9 +53,15 @@ public class Samochodzik
             (SamochodzikImage as Image).Stretch = Stretch.Uniform;
         }
     }
+    public void ZmaianaKieruneczku(Kieruneczek kieruneczek)
+    {
+        Kieruneczek = kieruneczek;
+        PrzejechanaOdlegloscWSegmencie = 0;
+    }
+    
     public void Ruch()
     {
-        switch (kieruneczek)
+        switch (Kieruneczek)
         {
             case Kieruneczek.Gora:
                 Y -= SamochodzikowaPredkosc;
@@ -69,6 +79,7 @@ public class Samochodzik
                 X -= SamochodzikowaPredkosc;
                 break;
         }
+        PrzejechanaOdlegloscWSegmencie += SamochodzikowaPredkosc;
     }
 }
 

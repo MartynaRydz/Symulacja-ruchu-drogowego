@@ -14,7 +14,7 @@ namespace Projekcik
     public partial class MainWindow : Window
     {
         private Random _random = new Random();
-        private bool _isMoving;  //czy ciufcia się porusza
+        private bool _isMoving;  //czy ciufcia i samochodziki się poruszaja
         SamochodzikController _samochodzikController = new SamochodzikController();
         Thread ciufciaThread;
         Thread[] samochodzikThread;
@@ -26,7 +26,6 @@ namespace Projekcik
             InitializeComponent();
             _isMoving = false;
         }
-        #region CiufCiuf
         private void CiufciaJedzie()
         {
 
@@ -64,9 +63,6 @@ namespace Projekcik
 
             }
         }
-
-        // 0 - góra, 1 - prawo, 2 - dół, 3 - lewo
-        #endregion
         private void SamochodzikJedzie()
         {
             Samochodzik samochodzik = null;
@@ -89,8 +85,14 @@ namespace Projekcik
                 });
 
                 //Segment aktualizowania
-
-
+                while(_samochodzikController.AktualizacjaSamochodziku(samochodzik))
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Canvas.SetLeft(samochodzik.SamochodzikImage, samochodzik.X);
+                        Canvas.SetTop(samochodzik.SamochodzikImage, samochodzik.Y);
+                    });
+                }
 
                 //Segment usuwania
                 if (_samochodzikController.UsuwankoSamchodziku(samochodzik))

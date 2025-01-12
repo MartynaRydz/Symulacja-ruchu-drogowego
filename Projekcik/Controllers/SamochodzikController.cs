@@ -11,6 +11,7 @@ namespace Projekcik.Controllers;
 public class SamochodzikController
 {
     List<Samochodzik> samodziki = new List<Samochodzik>();
+    int numberOfRoadSegments = 5;
 
     readonly List<Tuple<Kieruneczek, int>> kierunekIDystansPrawo = new List<Tuple<Kieruneczek, int>>()
     {
@@ -36,28 +37,57 @@ public class SamochodzikController
     }
     public bool CzyMogeDodacSamochodziku(Samochodzik samochodzik) //żeby nie stworzyły się dwa samochodziki na sobie
     {
-        if ((samochodzik.KieruneczekDrogi == Kieruneczek.Prawo && samochodzik.X >= 200) || (samochodzik.KieruneczekDrogi == Kieruneczek.Lewo && samochodzik.X <= 800))
+        foreach(Samochodzik samochidzik2 in samodziki.Where(c => c.Kieruneczek == samochodzik.Kieruneczek))
         {
-            return true;
+            if (Math.Abs(samochidzik2.X - samochodzik.X) < 200)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
-        else
-        { 
-            return false;
-        }
+        return true;
     }
     public void DodawanieSamochodziku(Samochodzik samochodzik)
     {
         samodziki.Add(samochodzik);
     }
-    public void DostosowanieSamochodzikowejPredkosci(Samochodzik samochodzik1, Samochodzik samochodzik2)
+    public void DostosowanieSamochodzikowejPredkosci(Samochodzik samochodzik1, Samochodzik samochodzik2) //samochodzik 1 to zamochodzik sprawdzany a 2 to ten do którego porównujemy
     {
-        if (samochodzik1.KieruneczekDrogi == samochodzik2.KieruneczekDrogi)
+        foreach (Samochodzik samochidzik2 in samodziki.Where(c => c.Kieruneczek == samochodzik1.Kieruneczek))
         {
-            samochodzik1.SamochodzikowaPredkosc = samochodzik2.SamochodzikowaPredkosc;
+            if (Math.Abs(samochidzik2.X - samochodzik1.X) < 200)
+            {
+                samochodzik1.SamochodzikowaPredkosc = samochidzik2.SamochodzikowaPredkosc;
+            }
         }
     }
-    public void AktualizacjaSamochodziku(Samochodzik samochodzik)
+    public bool AktualizacjaSamochodziku(Samochodzik samochodzik)
     {
-        samochodzik.Ruch();
+        if (samochodzik.ObecnySegment < 5 && samochodzik.ObecnySegment >= 0)
+        {
+            var kierunekIDystansSamochodziku = samochodzik.KieruneczekDrogi == Kieruneczek.Prawo ? kierunekIDystansPrawo : kierunekIDystansLewo;
+
+            if (samochodzik.PrzejechanaOdlegloscWSegmencie < kierunekIDystansSamochodziku[samochodzik.ObecnySegment].Item2)
+            {
+                samochodzik.Ruch();
+            }
+            else
+            {
+                samochodzik.ObecnySegment++;
+                if (samochodzik.ObecnySegment < 5 && samochodzik.ObecnySegment >= 0)
+                {
+                    samochodzik.ZmaianaKieruneczku(kierunekIDystansSamochodziku[samochodzik.ObecnySegment].Item1);
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
     }
 }
