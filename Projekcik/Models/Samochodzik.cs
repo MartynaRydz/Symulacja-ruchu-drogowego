@@ -1,24 +1,25 @@
-﻿using System;
+﻿using Projekcik.Enum;
+using System;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Projekcik;
+namespace Projekcik.Models;
 
 public class Samochodzik
 {
     public double X { get; set; }
     public double Y { get; set; }
-    public int Kieruneczek { get; set; } // 0 - góra, 1 - prawo, 2 - dół, 3 - lewo
+    public Kieruneczek kieruneczek { get; set; }
+    public Kieruneczek KieruneczekDrogi { get; set; }  
     public UIElement SamochodzikImage { get; set; }
     public int SamochodzikowaPredkosc { get; set; }
     private Random random = new Random();
 
     public Samochodzik()
     {
-        Kieruneczek = random.Next(0, 2);
-
         SamochodzikImage = new Image
         {
             Width = 100,  // szerokość samochodzika
@@ -27,21 +28,46 @@ public class Samochodzik
 
         SamochodzikowaPredkosc = random.Next(4, 8); //losowanie prędkości 
 
-        if (Kieruneczek == 0)
+        int randomValue = random.Next(0, 2);  // Losuje 0 lub 1
+        Kieruneczek startKieruneczek = (randomValue == 0) ? Kieruneczek.Lewo : Kieruneczek.Prawo;
+
+
+        if (startKieruneczek == Kieruneczek.Lewo)
         {
             Y = 590;
             X = 1200;
-            
+
             (SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodLewo.png"));
             (SamochodzikImage as Image).Stretch = Stretch.Uniform;
         }
-        else if (Kieruneczek == 1)
+        else if (startKieruneczek == Kieruneczek.Prawo)
         {
             Y = 220;
             X = -200;
-            
+
             (SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodPrawo.png"));
             (SamochodzikImage as Image).Stretch = Stretch.Uniform;
+        }
+    }
+    public void Ruch()
+    {
+        switch (kieruneczek)
+        {
+            case Kieruneczek.Gora:
+                Y -= SamochodzikowaPredkosc;
+                break;
+
+            case Kieruneczek.Prawo: 
+                X += SamochodzikowaPredkosc;
+                break;
+
+            case Kieruneczek.Dol:
+                Y += SamochodzikowaPredkosc;
+                break;
+
+            case Kieruneczek.Lewo:
+                X -= SamochodzikowaPredkosc;
+                break;
         }
     }
 }

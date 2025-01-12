@@ -5,6 +5,9 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.Diagnostics;
 using System.Linq;
+using Projekcik.Models;
+using Projekcik.Controllers;
+using System.ComponentModel.DataAnnotations;
 
 namespace Projekcik
 {
@@ -12,26 +15,11 @@ namespace Projekcik
     {
         private Random _random = new Random();
         private bool _isMoving;  //czy ciufcia się porusza
+        SamochodzikController _samochodzikController = new SamochodzikController();
         Thread ciufciaThread;
         Thread[] samochodzikThread;
 
-        readonly List<Tuple<int, int>> kierunekIDystansPrawo = new List<Tuple<int, int>>()
-            {
-                Tuple.Create(1, 950),  //prawo1
-                Tuple.Create(2, 1505),  //dół1 5niz
-                Tuple.Create(3, 720),  //lewo 700
-                Tuple.Create(2, 250),  //dół2 5niz
-                Tuple.Create(1, 950)   //prawo2kbj
-            };
-
-        readonly List<Tuple<int, int>> kierunekIDystansLewo = new List<Tuple<int, int>>()
-            {
-                Tuple.Create(3, 1080),  //lewo1
-                Tuple.Create(0, 165),   //góra1
-                Tuple.Create(1, 670),   //prawo
-                Tuple.Create(0, 250),   //góra2
-                Tuple.Create(3, 1000)    //lewo2
-            };
+        
 
         public MainWindow()
         {
@@ -81,9 +69,40 @@ namespace Projekcik
         #endregion
         private void SamochodzikJedzie()
         {
-            while (_isMoving)
+            Samochodzik samochodzik = null;
+            while(_isMoving)
             {
-                List<Tuple<int, int>> obecneJechanko = _random.Next(1, 3) == 1 ? kierunekIDystansLewo : kierunekIDystansPrawo;
+                samochodzik = new Samochodzik();
+
+                //Segment dodawania
+                while(!_samochodzikController.CzyMogeDodacSamochodziku(samochodzik))
+                {
+                    Thread.Sleep(1000);
+                }
+                _samochodzikController.DodawanieSamochodziku(samochodzik);
+
+                Dispatcher.Invoke(() => 
+                {
+                    tloDroga.Children.Add(samochodzik.SamochodzikImage);
+                    Canvas.SetLeft(samochodzik.SamochodzikImage,samochodzik.X);
+                    Canvas.SetTop(samochodzik.SamochodzikImage,samochodzik.Y);
+                });
+
+                //Segment aktualizowania
+
+
+
+                //Segment usuwania
+                if (_samochodzikController.UsuwankoSamchodziku(samochodzik))
+                {
+                    Dispatcher.Invoke(() => { tloDroga.Children.Remove(samochodzik.SamochodzikImage); });
+                }
+            }
+
+
+            /*while (_isMoving)
+            {
+                List<Tuple<int, int>> obecneJechanko = null;//_random.Next(1, 3) == 1 ? kierunekIDystansLewo : kierunekIDystansPrawo;
                 Samochodzik samochodzik = null;
                 int tloDrogaWidth = 0;
                 int smochodzikWidth = 0;
@@ -125,40 +144,10 @@ namespace Projekcik
 
                     }
 
-                    Dispatcher.Invoke(() => tloDroga.Children.Add(samochodzik.SamochodzikImage));
-
-                    for (int i = 0; i < odcinekDrogi.Item2; i += Math.Abs(samochodzik.SamochodzikowaPredkosc))
-                    {
-                        Debug.WriteLine("Niby działam");
-                        switch (odcinekDrogi.Item1)
-                        {
-                            case 0: //gora
-                                samochodzik.Y -= samochodzik.SamochodzikowaPredkosc;
-                                break;
-
-                            case 1: //prawo
-                                samochodzik.X += samochodzik.SamochodzikowaPredkosc;
-                                break;
-
-                            case 2: //dol
-                                samochodzik.Y += samochodzik.SamochodzikowaPredkosc;
-                                break;
-
-                            case 3://lewo
-                                samochodzik.X -= samochodzik.SamochodzikowaPredkosc;
-                                break;
-                        }
-
-                        Dispatcher.Invoke(() =>
-                        {
-                            Canvas.SetLeft(samochodzik.SamochodzikImage, samochodzik.X);
-                            Canvas.SetTop(samochodzik.SamochodzikImage, samochodzik.Y);
-                        });
-                        Thread.Sleep(50);
-                    }
+                    
                 }
 
-            }
+            }*/
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)

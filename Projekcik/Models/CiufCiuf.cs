@@ -3,7 +3,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 
-namespace Projekcik;
+namespace Projekcik.Models;
 
 public class CiufCiuf
 {
