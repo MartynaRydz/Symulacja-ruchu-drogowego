@@ -1,4 +1,5 @@
 ﻿using Projekcik.Enum;
+using Projekcik.Events;
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows;
@@ -18,7 +19,15 @@ public class Samochodzik
     public int ObecnySegment { get; set; }
     public int SamochodzikowaPredkosc { get; set; }
     public int PrzejechanaOdlegloscWSegmencie { get; set; }
+
     private Random random = new Random();
+
+    public event EventHandler<KierunekZmienilSieEventArgs> KieruneczekZmienlSie;
+
+    protected virtual void OnKieruneczekZmienilSie()
+    {
+        KieruneczekZmienlSie?.Invoke(this, new KierunekZmienilSieEventArgs() { SamochodzikZmienajacyKierunek = this});
+    }
 
     public Samochodzik()
     {
@@ -57,6 +66,7 @@ public class Samochodzik
     {
         Kieruneczek = kieruneczek;
         PrzejechanaOdlegloscWSegmencie = 0;
+        OnKieruneczekZmienilSie();
     }
     
     public void Ruch()

@@ -8,6 +8,8 @@ using System.Linq;
 using Projekcik.Models;
 using Projekcik.Controllers;
 using System.ComponentModel.DataAnnotations;
+using Projekcik.Events;
+using Projekcik.Enum;
 
 namespace Projekcik
 {
@@ -24,8 +26,38 @@ namespace Projekcik
         public MainWindow()
         {
             InitializeComponent();
-            _isMoving = false;
+            _isMoving = false;  
         }
+        private void Samochodzik_KieruneczekZmienlSie(object? sender, KierunekZmienilSieEventArgs e)
+        {
+           // Dispatcher.Invoke(() => tloDroga.Children.Remove(e.SamochodzikZmienajacyKierunek.SamochodzikImage));
+
+            switch (e.SamochodzikZmienajacyKierunek.Kieruneczek)
+            {
+                case Kieruneczek.Gora:
+                    Dispatcher.Invoke(() => (e.SamochodzikZmienajacyKierunek.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodGora.png")));
+                    break;
+
+                case Kieruneczek.Prawo:
+                    Dispatcher.Invoke(() => (e.SamochodzikZmienajacyKierunek.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodPrawo.png")));
+                    break;
+
+                case Kieruneczek.Dol:
+                    Dispatcher.Invoke(() => (e.SamochodzikZmienajacyKierunek.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodDol.png")));
+                    break;
+
+                case Kieruneczek.Lewo:
+                    Dispatcher.Invoke(() => (e.SamochodzikZmienajacyKierunek.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodLewo.png")));
+                    break;
+            }
+            /*Dispatcher.Invoke(() =>
+            {
+                tloDroga.Children.Add(e.SamochodzikZmienajacyKierunek.SamochodzikImage);
+                Canvas.SetLeft(e.SamochodzikZmienajacyKierunek.SamochodzikImage, e.SamochodzikZmienajacyKierunek.X);
+                Canvas.SetTop(e.SamochodzikZmienajacyKierunek.SamochodzikImage, e.SamochodzikZmienajacyKierunek.Y);
+            });*/
+        }
+
         private void CiufciaJedzie()
         {
 
@@ -66,12 +98,13 @@ namespace Projekcik
         private void SamochodzikJedzie()
         {
             Samochodzik samochodzik = null;
-            while(_isMoving)
+            while (_isMoving)
             {
-                samochodzik = new Samochodzik();
+               Dispatcher.Invoke(()=> samochodzik = new Samochodzik());
+                samochodzik.KieruneczekZmienlSie += Samochodzik_KieruneczekZmienlSie;
 
                 //Segment dodawania
-                while(!_samochodzikController.CzyMogeDodacSamochodziku(samochodzik))
+                while (!_samochodzikController.CzyMogeDodacSamochodzik(samochodzik))
                 {
                     Thread.Sleep(1000);
                 }
@@ -151,7 +184,6 @@ namespace Projekcik
 
             }*/
         }
-
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             if (_isMoving) return;
@@ -168,8 +200,6 @@ namespace Projekcik
                 samochodzikThread[i].Start();
             }
         }
-
-
         private async void StopButton_Click(object sender, RoutedEventArgs e)
         {
             _isMoving = false;

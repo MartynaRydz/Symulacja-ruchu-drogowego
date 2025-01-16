@@ -1,4 +1,5 @@
 ﻿using Projekcik.Enum;
+using Projekcik.Events;
 using Projekcik.Models;
 using System;
 using System.Collections.Generic;
@@ -35,40 +36,45 @@ public class SamochodzikController
     {
         return samodziki.Remove(samochodzik);
     }
-    public bool CzyMogeDodacSamochodziku(Samochodzik samochodzik) //żeby nie stworzyły się dwa samochodziki na sobie
+    public bool CzyMogeDodacSamochodzik(Samochodzik samochodzik)
     {
-        foreach(Samochodzik samochidzik2 in samodziki.Where(c => c.Kieruneczek == samochodzik.Kieruneczek))
+        var samochodzikList = samodziki.Where(c => c.Kieruneczek == samochodzik.Kieruneczek && c.ObecnySegment == samochodzik.ObecnySegment).ToList();
+        foreach (Samochodzik samochodzik2 in samochodzikList)
         {
-            if (Math.Abs(samochidzik2.X - samochodzik.X) < 200)
+            if (samochodzik2.PrzejechanaOdlegloscWSegmencie > 200)
             {
-                return false;
+                return true;
             }
             else
             {
-                return true;
+                return false;
             }
         }
         return true;
     }
+
     public void DodawanieSamochodziku(Samochodzik samochodzik)
     {
         samodziki.Add(samochodzik);
     }
-    public void DostosowanieSamochodzikowejPredkosci(Samochodzik samochodzik1, Samochodzik samochodzik2) //samochodzik 1 to zamochodzik sprawdzany a 2 to ten do którego porównujemy
+    public void DostosowanieSamochodzikowejPredkosci(Samochodzik samochodzik1)
     {
-        foreach (Samochodzik samochidzik2 in samodziki.Where(c => c.Kieruneczek == samochodzik1.Kieruneczek))
+        var samochodzikList = samodziki.Where(c => c.Kieruneczek == samochodzik1.Kieruneczek && c.ObecnySegment == samochodzik1.ObecnySegment).ToList();
+        foreach (Samochodzik samochodzik2 in samochodzikList)
         {
-            if (Math.Abs(samochidzik2.X - samochodzik1.X) < 200)
+            if (Math.Abs(samochodzik2.PrzejechanaOdlegloscWSegmencie - samochodzik1.PrzejechanaOdlegloscWSegmencie) < 200)
             {
-                samochodzik1.SamochodzikowaPredkosc = samochidzik2.SamochodzikowaPredkosc;
+                samochodzik1.SamochodzikowaPredkosc = samochodzik2.SamochodzikowaPredkosc;
             }
         }
     }
+
     public bool AktualizacjaSamochodziku(Samochodzik samochodzik)
     {
-        if (samochodzik.ObecnySegment < 5 && samochodzik.ObecnySegment >= 0)
+        if (samochodzik.ObecnySegment < numberOfRoadSegments && samochodzik.ObecnySegment >= 0)
         {
             var kierunekIDystansSamochodziku = samochodzik.KieruneczekDrogi == Kieruneczek.Prawo ? kierunekIDystansPrawo : kierunekIDystansLewo;
+            DostosowanieSamochodzikowejPredkosci(samochodzik);
 
             if (samochodzik.PrzejechanaOdlegloscWSegmencie < kierunekIDystansSamochodziku[samochodzik.ObecnySegment].Item2)
             {
@@ -80,6 +86,7 @@ public class SamochodzikController
                 if (samochodzik.ObecnySegment < 5 && samochodzik.ObecnySegment >= 0)
                 {
                     samochodzik.ZmaianaKieruneczku(kierunekIDystansSamochodziku[samochodzik.ObecnySegment].Item1);
+
                 }
             }
             return true;
