@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Projekcik.Controllers;
 
-internal class SemaforekController
+public class SwiatelkaController
 {
+
 }

@@ -88,7 +88,7 @@ namespace Projekcik
 
                 Dispatcher.Invoke(() => tloDroga.Children.Remove(ciufciuf.CiufciufImage));
 
-                Thread.Sleep(_random.Next(2, 5) * 1000);
+                Thread.Sleep(_random.Next(4, 10) * 1000);
 
             }
         }

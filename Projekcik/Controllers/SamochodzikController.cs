@@ -41,7 +41,7 @@ public class SamochodzikController
         var samochodzikList = samodziki.Where(c => c.Kieruneczek == samochodzik.Kieruneczek && c.ObecnySegment == samochodzik.ObecnySegment).ToList();
         foreach (Samochodzik samochodzik2 in samochodzikList)
         {
-            if (samochodzik2.PrzejechanaOdlegloscWSegmencie > 350)
+            if (samochodzik2.PrzejechanaOdlegloscWSegmencie > 150)
             {
                 return true;
             }
@@ -61,9 +61,10 @@ public class SamochodzikController
         var samochodzikList = samodziki.Where(c => c.Kieruneczek == samochodzik1.Kieruneczek && c.ObecnySegment == samochodzik1.ObecnySegment).ToList();
         foreach (Samochodzik samochodzik2 in samochodzikList)
         {
-            if (Math.Abs(samochodzik2.PrzejechanaOdlegloscWSegmencie - samochodzik1.PrzejechanaOdlegloscWSegmencie) < 300)
+            if (Math.Abs(samochodzik2.PrzejechanaOdlegloscWSegmencie - samochodzik1.PrzejechanaOdlegloscWSegmencie) < 150)
             {
-                samochodzik1.SamochodzikowaPredkosc = samochodzik2.SamochodzikowaPredkosc;
+                //samochodzik1.SamochodzikowaPredkosc = samochodzik2.SamochodzikowaPredkosc;
+                samochodzik2.SamochodzikowaPredkosc = samochodzik1.SamochodzikowaPredkosc;
             }
         }
     }
