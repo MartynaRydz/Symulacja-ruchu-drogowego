@@ -1,15 +1,12 @@
-﻿using System.Windows;
+﻿using Projekcik.Controllers;
+using Projekcik.Enum;
+using Projekcik.Events;
+using Projekcik.Models;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using System.Windows.Media;
 using System.Windows.Threading;
-using System.Diagnostics;
-using System.Linq;
-using Projekcik.Models;
-using Projekcik.Controllers;
-using System.ComponentModel.DataAnnotations;
-using Projekcik.Events;
-using Projekcik.Enum;
 
 namespace Projekcik
 {
@@ -202,6 +199,7 @@ namespace Projekcik
         }
         private async void StopButton_Click(object sender, RoutedEventArgs e)
         {
+          
             _isMoving = false;
             await Task.Run(() => ciufciaThread?.Join());
             for (int i = 0; i < 5; i++)

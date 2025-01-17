@@ -18,9 +18,9 @@ public class SamochodzikController
     {
       Tuple.Create(Kieruneczek.Prawo, 950),  //prawo1
       Tuple.Create(Kieruneczek.Dol, 150),  //dół
-      Tuple.Create(Kieruneczek.Lewo, 700),  //lewo
-      Tuple.Create(Kieruneczek.Dol, 255),  //dół2
-      Tuple.Create(Kieruneczek.Prawo, 950)   //prawo2
+      Tuple.Create(Kieruneczek.Lewo, 690),  //lewo
+      Tuple.Create(Kieruneczek.Dol, 260),  //dół2
+      Tuple.Create(Kieruneczek.Prawo, 1000)   //prawo2
     };
 
     readonly List<Tuple<Kieruneczek, int>> kierunekIDystansLewo = new List<Tuple<Kieruneczek, int>>()
@@ -29,7 +29,7 @@ public class SamochodzikController
       Tuple.Create(Kieruneczek.Gora, 165),   //góra1
       Tuple.Create(Kieruneczek.Prawo, 670),   //prawo
       Tuple.Create(Kieruneczek.Gora, 250),   //góra2
-      Tuple.Create(Kieruneczek.Lewo, 1000)    //lewo2
+      Tuple.Create(Kieruneczek.Lewo, 900)    //lewo2 1050
     };
 
     public bool UsuwankoSamchodziku(Samochodzik samochodzik) // usówa i zwraca bool bo chcę zrobić tak że jeśłi usunie z listy to wtedy w main sprawdzę czy true czy false i usunę wtedy obrazek z tym zamochodem :D
