@@ -40,7 +40,7 @@ public class Samochodzik
         ObecnySegment = 0;
         PrzejechanaOdlegloscWSegmencie = 0;
 
-        SamochodzikowaPredkosc = random.Next(4, 8); //losowanie prędkości 
+        SamochodzikowaPredkosc = random.Next(3, 8); //losowanie prędkości 
 
         int randomValue = random.Next(0, 2);  // Losuje 0 lub 1
         Kieruneczek startKieruneczek = (randomValue == 0) ? Kieruneczek.Lewo : Kieruneczek.Prawo;
@@ -49,6 +49,10 @@ public class Samochodzik
         {
             Y = 590;
             X = 1200;
+            Kieruneczek = startKieruneczek;//dodane w prubir naprawy(pomohłó)
+
+            KieruneczekDrogi = startKieruneczek;
+
 
             (SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodLewo.png"));
             (SamochodzikImage as Image).Stretch = Stretch.Uniform;
@@ -57,6 +61,9 @@ public class Samochodzik
         {
             Y = 220;
             X = -200;
+            Kieruneczek = startKieruneczek;//dodane w prubie narawy(pomogło)
+
+            KieruneczekDrogi = startKieruneczek;//myśłę ze to po to żeby dobieraó dobrą ścieszke w aktualizacjisamochodziku (donrze myślałam)
 
             (SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodPrawo.png"));
             (SamochodzikImage as Image).Stretch = Stretch.Uniform;

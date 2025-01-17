@@ -17,7 +17,7 @@ public class SamochodzikController
     readonly List<Tuple<Kieruneczek, int>> kierunekIDystansPrawo = new List<Tuple<Kieruneczek, int>>()
     {
       Tuple.Create(Kieruneczek.Prawo, 950),  //prawo1
-      Tuple.Create(Kieruneczek.Dol, 1510),  //dół
+      Tuple.Create(Kieruneczek.Dol, 150),  //dół
       Tuple.Create(Kieruneczek.Lewo, 700),  //lewo
       Tuple.Create(Kieruneczek.Dol, 255),  //dół2
       Tuple.Create(Kieruneczek.Prawo, 950)   //prawo2
@@ -41,7 +41,7 @@ public class SamochodzikController
         var samochodzikList = samodziki.Where(c => c.Kieruneczek == samochodzik.Kieruneczek && c.ObecnySegment == samochodzik.ObecnySegment).ToList();
         foreach (Samochodzik samochodzik2 in samochodzikList)
         {
-            if (samochodzik2.PrzejechanaOdlegloscWSegmencie > 200)
+            if (samochodzik2.PrzejechanaOdlegloscWSegmencie > 350)
             {
                 return true;
             }
@@ -52,7 +52,6 @@ public class SamochodzikController
         }
         return true;
     }
-
     public void DodawanieSamochodziku(Samochodzik samochodzik)
     {
         samodziki.Add(samochodzik);
@@ -62,13 +61,12 @@ public class SamochodzikController
         var samochodzikList = samodziki.Where(c => c.Kieruneczek == samochodzik1.Kieruneczek && c.ObecnySegment == samochodzik1.ObecnySegment).ToList();
         foreach (Samochodzik samochodzik2 in samochodzikList)
         {
-            if (Math.Abs(samochodzik2.PrzejechanaOdlegloscWSegmencie - samochodzik1.PrzejechanaOdlegloscWSegmencie) < 200)
+            if (Math.Abs(samochodzik2.PrzejechanaOdlegloscWSegmencie - samochodzik1.PrzejechanaOdlegloscWSegmencie) < 300)
             {
                 samochodzik1.SamochodzikowaPredkosc = samochodzik2.SamochodzikowaPredkosc;
             }
         }
     }
-
     public bool AktualizacjaSamochodziku(Samochodzik samochodzik)
     {
         if (samochodzik.ObecnySegment < numberOfRoadSegments && samochodzik.ObecnySegment >= 0)
@@ -86,7 +84,6 @@ public class SamochodzikController
                 if (samochodzik.ObecnySegment < 5 && samochodzik.ObecnySegment >= 0)
                 {
                     samochodzik.ZmaianaKieruneczku(kierunekIDystansSamochodziku[samochodzik.ObecnySegment].Item1);
-
                 }
             }
             return true;

@@ -20,8 +20,9 @@ namespace Projekcik
         SamochodzikController _samochodzikController = new SamochodzikController();
         Thread ciufciaThread;
         Thread[] samochodzikThread;
+        //Thread samochodzikThread;
 
-        
+
 
         public MainWindow()
         {
@@ -57,7 +58,6 @@ namespace Projekcik
                 Canvas.SetTop(e.SamochodzikZmienajacyKierunek.SamochodzikImage, e.SamochodzikZmienajacyKierunek.Y);
             });*/
         }
-
         private void CiufciaJedzie()
         {
 
@@ -120,6 +120,7 @@ namespace Projekcik
                 //Segment aktualizowania
                 while(_samochodzikController.AktualizacjaSamochodziku(samochodzik))
                 {
+                    Thread.Sleep(50);
                     Dispatcher.Invoke(() =>
                     {
                         Canvas.SetLeft(samochodzik.SamochodzikImage, samochodzik.X);
@@ -133,7 +134,6 @@ namespace Projekcik
                     Dispatcher.Invoke(() => { tloDroga.Children.Remove(samochodzik.SamochodzikImage); });
                 }
             }
-
 
             /*while (_isMoving)
             {
@@ -190,8 +190,8 @@ namespace Projekcik
             _isMoving = true;
             ciufciaThread = new Thread(CiufciaJedzie);
             //samochodzikThread = new Thread(SamochodzikJedzie);
-            ciufciaThread.Start();
             //samochodzikThread.Start();
+            ciufciaThread.Start();
             samochodzikThread = new Thread[5];
             for (int i = 0; i < 5; i++)
             {
@@ -208,6 +208,7 @@ namespace Projekcik
             {
                 await Task.Run(() => samochodzikThread[i]?.Join());
             }
+            await Task.Run(() => ciufciaThread?.Join());
             //await Task.Run(() => samochodzikThread?.Join());
             Dispatcher.Invoke(() => { tloDroga.Children.Clear(); });
         }
