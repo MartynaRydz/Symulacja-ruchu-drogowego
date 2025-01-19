@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Projekcik.Models;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Projekcik.Controllers;
 
-internal class SzlabanikController
+public class CiufciufController
 {
-   
+    public CiufCiuf CiufCiuf { get; set; }
 }

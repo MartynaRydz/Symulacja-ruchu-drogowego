@@ -2,6 +2,7 @@
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace Projekcik.Models;
 
@@ -18,11 +19,11 @@ public class CiufCiuf
     {
         Kieruneczek = random.Next(0, 2);
 
-        CiufciufImage = new Image
-        {
-            Width = 350,  // szerokość ciufci
-            Height = 150, // wysokość ciufci
-        };
+            CiufciufImage = new Image
+            {
+                Width = 350,  // szerokość ciufci
+                Height = 150, // wysokość ciufci
+            };
 
         if (Kieruneczek == 0)
         {
@@ -35,7 +36,7 @@ public class CiufCiuf
         else if (Kieruneczek == 1)
         {
             Y = 500;
-            X = -450;
+            X = -500;
             CiufciowaPredkosc = random.Next(2, 8);
             (CiufciufImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/ciufciufBezTlaPrawo.png"));
             (CiufciufImage as Image).Stretch = Stretch.Uniform;

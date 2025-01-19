@@ -25,12 +25,12 @@ internal class Swiatelka
             Height = 100,  // wysokość 
         };
 
-        X = 300;
-        Y = 600;
+        X = -40;
+        Y = 450;
 
         SwiatelkaSwieca = false;
 
-        (SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor1.png"));
+        (SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semaforZgaszony.png"));
         (SwiatelkaImage as Image).Stretch = Stretch.Uniform;
     }
 
