@@ -1,6 +1,7 @@
 ﻿using Projekcik.Enum;
 using Projekcik.Events;
 using System;
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,6 +24,7 @@ public class Samochodzik
     private Random random = new Random();
 
     public event EventHandler<KierunekZmienilSieEventArgs> KieruneczekZmienlSie;
+
 
     protected virtual void OnKieruneczekZmienilSie()
     {
@@ -78,25 +80,70 @@ public class Samochodzik
     
     public void Ruch()
     {
-        switch (Kieruneczek)
+
+        if (Swiatelka.SwiatelkaSwieca && (Kieruneczek == Kieruneczek.Lewo && ObecnySegment == 2 || Kieruneczek == Kieruneczek.Lewo && ObecnySegment == 0) && X <= 200)
         {
-            case Kieruneczek.Gora:
-                Y -= SamochodzikowaPredkosc;
-                break;
-
-            case Kieruneczek.Prawo: 
-                X += SamochodzikowaPredkosc;
-                break;
-
-            case Kieruneczek.Dol:
-                Y += SamochodzikowaPredkosc;
-                break;
-
-            case Kieruneczek.Lewo:
-                X -= SamochodzikowaPredkosc;
-                break;
+            SamochodzikowaPredkosc = 0;
         }
-        PrzejechanaOdlegloscWSegmencie += SamochodzikowaPredkosc;
+        else
+        {
+
+            switch (Kieruneczek)
+            {
+                case Kieruneczek.Gora:
+                    Y -= SamochodzikowaPredkosc;
+                    break;
+
+                case Kieruneczek.Prawo:
+                    X += SamochodzikowaPredkosc;
+                    break;
+
+                case Kieruneczek.Dol:
+                    Y += SamochodzikowaPredkosc;
+                    break;
+
+                case Kieruneczek.Lewo:
+                    X -= SamochodzikowaPredkosc;
+                    break;
+            }
+            PrzejechanaOdlegloscWSegmencie += SamochodzikowaPredkosc;
+
+        }
+
+        if (SamochodzikowaPredkosc == 0 && !Swiatelka.SwiatelkaSwieca)
+        {
+            SamochodzikowaPredkosc = random.Next(3, 8);
+        }
+
+       /* if (!(Swiatelka.SwiatelkaSwieca && (Kieruneczek == Kieruneczek.Lewo && ObecnySegment == 2 || Kieruneczek == Kieruneczek.Lewo && ObecnySegment == 0) && X <= 200))
+        {
+
+            switch (Kieruneczek)
+            {
+                case Kieruneczek.Gora:
+                    Y -= SamochodzikowaPredkosc;
+                    break;
+
+                case Kieruneczek.Prawo:
+                    X += SamochodzikowaPredkosc;
+                    break;
+
+                case Kieruneczek.Dol:
+                    Y += SamochodzikowaPredkosc;
+                    break;
+
+                case Kieruneczek.Lewo:
+                    X -= SamochodzikowaPredkosc;
+                    break;
+            }
+            PrzejechanaOdlegloscWSegmencie += SamochodzikowaPredkosc;
+
+        }
+        else
+        {
+            SamochodzikowaPredkosc = 0;
+        }*/
+
     }
 }
 

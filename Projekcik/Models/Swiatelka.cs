@@ -12,44 +12,52 @@ namespace Projekcik.Models;
 
 internal class Swiatelka
 {
-    public double X { get; set; }
-    public double Y { get; set; }
-    public bool SwiatelkaSwieca { get; set;  }
-    public UIElement SwiatelkaImage { get; set; }
+
+    public static bool SwiatelkaSwieca { get; set; }
 
     public Swiatelka()
     {
-        SwiatelkaImage = new Image
-        {
-            Width = 200,  // szerokość
-            Height = 100,  // wysokość 
-        };
-
-        X = -40;
-        Y = 450;
-
         SwiatelkaSwieca = false;
-
-        (SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semaforZgaszony.png"));
-        (SwiatelkaImage as Image).Stretch = Stretch.Uniform;
     }
 
-    public void SwiecaceSwiatelka()
-    {
-        while(SwiatelkaSwieca)
-        {
-            (SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor2.png"));
-            (SwiatelkaImage as Image).Stretch = Stretch.Uniform;
+    //public double X { get; set; }
+    //public double Y { get; set; }
+    //public bool SwiatelkaSwieca { get; set;  }
+    //public UIElement SwiatelkaImage { get; set; }
 
-            Thread.Sleep(500);
+    //public Swiatelka()
+    //{
+    //    SwiatelkaImage = new Image
+    //    {
+    //        Width = 200,  // szerokość
+    //        Height = 100,  // wysokość 
+    //    };
 
-            (SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor1.png"));
-            (SwiatelkaImage as Image).Stretch = Stretch.Uniform;
+    //    X = -40;
+    //    Y = 450;
 
-            Thread.Sleep(500);
-        }
+    //    SwiatelkaSwieca = false;
 
-        (SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor1.png"));
-        (SwiatelkaImage as Image).Stretch = Stretch.Uniform;
-    }
+    //    (SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semaforZgaszony.png"));
+    //    (SwiatelkaImage as Image).Stretch = Stretch.Uniform;
+    //}
+
+    //public void SwiecaceSwiatelka()
+    //{
+    //    while(SwiatelkaSwieca)
+    //    {
+    //        (SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor2.png"));
+    //        (SwiatelkaImage as Image).Stretch = Stretch.Uniform;
+
+    //        Thread.Sleep(500);
+
+    //        (SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor1.png"));
+    //        (SwiatelkaImage as Image).Stretch = Stretch.Uniform;
+
+    //        Thread.Sleep(500);
+    //    }
+
+    //    (SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor1.png"));
+    //    (SwiatelkaImage as Image).Stretch = Stretch.Uniform;
+    //}
 }

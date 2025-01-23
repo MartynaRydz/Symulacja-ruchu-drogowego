@@ -2,13 +2,9 @@
 using Projekcik.Enum;
 using Projekcik.Events;
 using Projekcik.Models;
-using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 
 namespace Projekcik;
@@ -25,7 +21,7 @@ public partial class MainWindow : Window
     Thread ciufciaThread;
     Thread[] samochodzikThread;
     Thread swiatelkaThread;
-    bool swieca = false;
+    //bool swieca = false;
     //Thread samochodzikThread;
 
 
@@ -35,7 +31,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         Canvas.SetZIndex(szlabanikDol, 1);
         _isMoving = false;  
-        swieca = false;
+        Swiatelka.SwiatelkaSwieca = false;
     }
 
     #region Pojazdy
@@ -120,6 +116,7 @@ public partial class MainWindow : Window
             }
             _samochodzikController.DodawanieSamochodziku(samochodzik);
 
+
             Dispatcher.Invoke(() => 
             {
                 tloDroga.Children.Add(samochodzik.SamochodzikImage);
@@ -130,14 +127,6 @@ public partial class MainWindow : Window
             //Segment aktualizowania
             while(_samochodzikController.AktualizacjaSamochodziku(samochodzik))
             {
-                if (swieca && ((samochodzik.Kieruneczek == Kieruneczek.Gora && samochodzik.ObecnySegment == 2)||((samochodzik.Kieruneczek == Kieruneczek.Dol && samochodzik.ObecnySegment == 4))))
-                {
-                    samochodzik.SamochodzikowaPredkosc = 0;
-                }
-                else 
-                {
-                    samochodzik.SamochodzikowaPredkosc = _random.Next(3, 8);
-                }
 
                 Thread.Sleep(50);
                 Dispatcher.Invoke(() =>
@@ -156,47 +145,40 @@ public partial class MainWindow : Window
     }
     #endregion
 
+    #region Syganlizacja
     public void SygnalizacjaSwiatelkowa()
     {
-        Dispatcher.Invoke(() =>
-        {
-            tloDroga.Children.Add(swiatelka.SwiatelkaImage);
-            Canvas.SetLeft(swiatelka.SwiatelkaImage, swiatelka.X);
-            Canvas.SetTop(swiatelka.SwiatelkaImage, swiatelka.Y);
-        });
-
         while (_isMoving)
         {
             if (_ciufciufController.CiufCiuf is not null)
-            {               
+            {
 
-                if (_ciufciufController.CiufCiuf.X > -400 && _ciufciufController.CiufCiuf.X < 500)
+                if (_ciufciufController.CiufCiuf.X > -500 && _ciufciufController.CiufCiuf.X < 500)
                 {
-                    swieca = true;
+                    Swiatelka.SwiatelkaSwieca = true;
 
                     Dispatcher.Invoke(() =>
                     {
-                        (swiatelka.SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor2.png"));
-                        (swiatelka.SwiatelkaImage as Image).Stretch = Stretch.Uniform;
+                        Switelko.Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor2.png"));
                     });
 
                     Thread.Sleep(300);
 
                     Dispatcher.Invoke(() =>
                     {
-                        (swiatelka.SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor1.png"));
-                        (swiatelka.SwiatelkaImage as Image).Stretch = Stretch.Uniform;
+                        Switelko.Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor1.png"));
                     });
                     Thread.Sleep(300);
                 }
-
-                swieca = false;
-
-                Dispatcher.Invoke(() =>
+                else
                 {
-                    (swiatelka.SwiatelkaImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/semaforZgaszony.png"));
-                    (swiatelka.SwiatelkaImage as Image).Stretch = Stretch.Uniform;
-                });
+                    Swiatelka.SwiatelkaSwieca = false;
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        Switelko.Source = new BitmapImage(new Uri("pack://application:,,,/items/semaforZgaszony.png"));
+                    });
+                }
             }
         }
     }
@@ -207,10 +189,9 @@ public partial class MainWindow : Window
         while (_isMoving)
         {
             
-
-            if (swieca)
+            if (Swiatelka.SwiatelkaSwieca)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(1100);
                 Dispatcher.Invoke(() =>
                 {
                     szlabanikGora.Source = new BitmapImage(new Uri("pack://application:,,,/items/szlabanZamkniety.png"));
@@ -219,6 +200,7 @@ public partial class MainWindow : Window
             }
             else
             {
+                Thread.Sleep(20);
                 Dispatcher.Invoke(() =>
                 {
                     szlabanikGora.Source = new BitmapImage(new Uri("pack://application:,,,/items/szlabanOtwarty.png"));
@@ -227,6 +209,8 @@ public partial class MainWindow : Window
             }
         }
     }
+
+    #endregion
 
     #region Buttoniki
     private void StartButton_Click(object sender, RoutedEventArgs e)

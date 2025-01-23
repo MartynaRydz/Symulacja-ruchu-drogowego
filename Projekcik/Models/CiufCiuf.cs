@@ -36,7 +36,7 @@ public class CiufCiuf
         else if (Kieruneczek == 1)
         {
             Y = 500;
-            X = -500;
+            X = -600;
             CiufciowaPredkosc = random.Next(2, 8);
             (CiufciufImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/ciufciufBezTlaPrawo.png"));
             (CiufciufImage as Image).Stretch = Stretch.Uniform;
