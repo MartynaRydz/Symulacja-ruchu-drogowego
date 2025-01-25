@@ -16,12 +16,13 @@
             <Canvas.Background>
                 <ImageBrush ImageSource="items/mapa_v5.png" Stretch="Uniform"/>
             </Canvas.Background>
-            <!-- Pociąg z ciufciuf 
-            <Rectangle x:Name="CiufCiuf" Width="350" Height="150" Canvas.Left="1100" Canvas.Top="500">
-                <Rectangle.Fill>
-                    <ImageBrush ImageSource="items/ciufciufBezTla.png" Stretch="Uniform"/>
-                </Rectangle.Fill>
-            </Rectangle>-->
+
+            <Image x:Name="szlabanikDol" Width="200" Height="200" Canvas.Left="78" Canvas.Top="490" Source="items/szlabanOtwarty.png" Stretch="Uniform" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+
+            <Image x:Name="szlabanikGora" Width="200" Height="200" Canvas.Left="44" Canvas.Top="361" Source="/Items/szlabanOtwarty.png" Stretch="Uniform" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+
+            <Image x:Name="Switelko" Width="73" Height="169" Canvas.Left="193" Canvas.Top="425" Source="/Items/semaforZgaszony.png"/>
+
         </Canvas>
         <!-- Boczne StackPanel -->
         <StackPanel Grid.Column="1" Height="800" Background="CadetBlue" VerticalAlignment="Top" Margin="10">

@@ -16,6 +16,11 @@
     <None Remove="Items\samochodGora.png" />
     <None Remove="Items\samochodLewo.png" />
     <None Remove="Items\samochodPrawo.png" />
+    <None Remove="Items\semafor1.png" />
+    <None Remove="Items\semafor2.png" />
+    <None Remove="Items\semaforZgaszony.png" />
+    <None Remove="Items\szlabanOtwarty.png" />
+    <None Remove="Items\szlabanZamkniety.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +33,11 @@
     <Resource Include="Items\samochodGora.png" />
     <Resource Include="Items\samochodLewo.png" />
     <Resource Include="Items\samochodPrawo.png" />
+    <Resource Include="Items\semafor1.png" />
+    <Resource Include="Items\semafor2.png" />
+    <Resource Include="Items\semaforZgaszony.png" />
+    <Resource Include="Items\szlabanOtwarty.png" />
+    <Resource Include="Items\szlabanZamkniety.png" />
   </ItemGroup>
 
 </Project>
