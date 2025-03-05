@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Projekcik.Events;
 
-public class KierunekZmienilSieEventArgs : EventArgs
+public class DirectionHasChangedEventArgs : EventArgs
 {
-    public Samochodzik SamochodzikZmienajacyKierunek { get; set;}
+    public Car directionChanegCar { get; set;}
     //public Kieruneczek PoprzedniKieruneczek { get; set;}
 }

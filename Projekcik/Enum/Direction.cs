@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Projekcik.Enum;
 
-public enum Kieruneczek
+public enum Direction
 { 
-    Gora = 0,
-    Prawo = 1,
-    Dol = 2,
-    Lewo = 3,
+    Up = 0,
+    Right = 1,
+    Down = 2,
+    Left = 3,
 }

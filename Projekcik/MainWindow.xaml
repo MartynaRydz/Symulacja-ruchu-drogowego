@@ -11,20 +11,20 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="430"/>
         </Grid.ColumnDefinitions>
-        <!-- Canvas z mapą -->
-        <Canvas x:Name ="tloDroga"  Grid.Column="0" Width="1050" Height="790">
+        
+        <Canvas x:Name ="backgroundWay"  Grid.Column="0" Width="1050" Height="790">
             <Canvas.Background>
                 <ImageBrush ImageSource="items/mapa_v5.png" Stretch="Uniform"/>
             </Canvas.Background>
 
-            <Image x:Name="szlabanikDol" Width="200" Height="200" Canvas.Left="78" Canvas.Top="490" Source="items/szlabanOtwarty.png" Stretch="Uniform" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+            <Image x:Name="closeBarrier" Width="200" Height="200" Canvas.Left="78" Canvas.Top="490" Source="items/szlabanOtwarty.png" Stretch="Uniform" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
 
-            <Image x:Name="szlabanikGora" Width="200" Height="200" Canvas.Left="44" Canvas.Top="361" Source="/Items/szlabanOtwarty.png" Stretch="Uniform" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+            <Image x:Name="openBarrier" Width="200" Height="200" Canvas.Left="44" Canvas.Top="361" Source="/Items/szlabanOtwarty.png" Stretch="Uniform" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
 
-            <Image x:Name="Switelko" Width="73" Height="169" Canvas.Left="193" Canvas.Top="425" Source="/Items/semaforZgaszony.png"/>
+            <Image x:Name="Light" Width="73" Height="169" Canvas.Left="193" Canvas.Top="425" Source="/Items/semaforZgaszony.png"/>
 
         </Canvas>
-        <!-- Boczne StackPanel -->
+        
         <StackPanel Grid.Column="1" Height="800" Background="CadetBlue" VerticalAlignment="Top" Margin="10">
             <TextBlock Text="Sterowanko" FontSize="20" FontWeight="Bold" Margin="10" TextAlignment="Center"/>
             <Button x:Name="StartButton" Content="Start" Width="250" Height="40" Margin="10" Background="AliceBlue" Click="StartButton_Click"/>
