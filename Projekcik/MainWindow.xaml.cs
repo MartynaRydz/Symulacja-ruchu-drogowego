@@ -12,134 +12,120 @@ namespace Projekcik;
 public partial class MainWindow : Window
 {
     private Random _random = new Random();
-    private bool _isMoving;  //czy ciufcia i samochodziki się poruszaja
-    SamochodzikController _samochodzikController = new SamochodzikController();
-    CiufciufController _ciufciufController = new CiufciufController();
-    Swiatelka swiatelka = new Swiatelka();
-    Szlabanik szlabanik = new Szlabanik();
-    Thread szlabanikThread;
-    Thread ciufciaThread;
-    Thread[] samochodzikThread;
-    Thread swiatelkaThread;
-    //bool swieca = false;
-    //Thread samochodzikThread;
-
-
+    private bool _isMoving; 
+    CarController _carController = new CarController();
+    TrainController _trainController = new TrainController();
+    TrafficLights lights = new TrafficLights();
+    Models.Barrier barrier = new Models.Barrier();
+    Thread barrierThread;
+    Thread trainThread;
+    Thread[] carThread;
+    Thread lightsThread;
 
     public MainWindow()
     {
         InitializeComponent();
-        Canvas.SetZIndex(szlabanikDol, 1);
+        Canvas.SetZIndex(closeBarrier, 1);
         _isMoving = false;  
-        Swiatelka.SwiatelkaSwieca = false;
+        TrafficLights.IsTrafficLightsOn = false;
     }
 
     #region Pojazdy
     
-    private void CiufciaJedzie()
+    private void TrainGoing()
     {
 
         while (_isMoving)
         {
-            Dispatcher.Invoke(() => { _ciufciufController.CiufCiuf = new CiufCiuf(); });
-            int tloDrogaWidth = 0;
-            int ciufciufWidth = 0;
+            Dispatcher.Invoke(() => { _trainController.Train = new Train(); });
+            int backgroundWayWidth = 0;
+            int trainWidth = 0;
 
             Dispatcher.Invoke(() =>
             {
-                tloDroga.Children.Add(_ciufciufController.CiufCiuf.CiufciufImage);// dodajemy ciufciuf (image) na canvas
-                tloDrogaWidth = (int)tloDroga.Width;
-                ciufciufWidth = (int)(_ciufciufController.CiufCiuf.CiufciufImage as FrameworkElement).Width;
-                Canvas.SetLeft(_ciufciufController.CiufCiuf.CiufciufImage, _ciufciufController.CiufCiuf.X);
-                Canvas.SetTop(_ciufciufController.CiufCiuf.CiufciufImage, _ciufciufController.CiufCiuf.Y);
+                backgroundWay.Children.Add(_trainController.Train.TrainImage);
+                backgroundWayWidth = (int)backgroundWay.Width;
+                trainWidth = (int)(_trainController.Train.TrainImage as FrameworkElement).Width;
+                Canvas.SetLeft(_trainController.Train.TrainImage, _trainController.Train.X);
+                Canvas.SetTop(_trainController.Train.TrainImage, _trainController.Train.Y);
             });
 
 
-            for (int i = 0; i < tloDrogaWidth + ciufciufWidth * 2; i += Math.Abs(_ciufciufController.CiufCiuf.CiufciowaPredkosc))
+            for (int i = 0; i < backgroundWayWidth + trainWidth * 2; i += Math.Abs(_trainController.Train.TrainSpeed))
             {
-                _ciufciufController.CiufCiuf.X += _ciufciufController.CiufCiuf.CiufciowaPredkosc;
+                _trainController.Train.X += _trainController.Train.TrainSpeed;
                 Dispatcher.Invoke(() =>
                 {
-                    Canvas.SetLeft(_ciufciufController.CiufCiuf.CiufciufImage, _ciufciufController.CiufCiuf.X);
-                    Canvas.SetTop(_ciufciufController.CiufCiuf.CiufciufImage, _ciufciufController.CiufCiuf.Y);
+                    Canvas.SetLeft(_trainController.Train.TrainImage, _trainController.Train.X);
+                    Canvas.SetTop(_trainController.Train.TrainImage, _trainController.Train.Y);
                 });
                 Thread.Sleep(50);
             }
 
-            Dispatcher.Invoke(() => tloDroga.Children.Remove(_ciufciufController.CiufCiuf.CiufciufImage));
+            Dispatcher.Invoke(() => backgroundWay.Children.Remove(_trainController.Train.TrainImage));
 
             Thread.Sleep(_random.Next(4, 6) * 1000);
 
         }
     }
-    private void Samochodzik_KieruneczekZmienlSie(object? sender, KierunekZmienilSieEventArgs e)
+    private void CarDirectionHasChanged(object? sender, DirectionHasChangedEventArgs e)
     {
-        // Dispatcher.Invoke(() => tloDroga.Children.Remove(e.SamochodzikZmienajacyKierunek.SamochodzikImage));
 
-        switch (e.SamochodzikZmienajacyKierunek.Kieruneczek)
+        switch (e.directionChanegCar.Direction)
         {
-            case Kieruneczek.Gora:
-                Dispatcher.Invoke(() => (e.SamochodzikZmienajacyKierunek.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodGora.png")));
+            case Direction.Up:
+                Dispatcher.Invoke(() => (e.directionChanegCar.CarImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodGora.png")));
                 break;
 
-            case Kieruneczek.Prawo:
-                Dispatcher.Invoke(() => (e.SamochodzikZmienajacyKierunek.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodPrawo.png")));
+            case Direction.Right:
+                Dispatcher.Invoke(() => (e.directionChanegCar.CarImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodPrawo.png")));
                 break;
 
-            case Kieruneczek.Dol:
-                Dispatcher.Invoke(() => (e.SamochodzikZmienajacyKierunek.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodDol.png")));
+            case Direction.Down:
+                Dispatcher.Invoke(() => (e.directionChanegCar.CarImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodDol.png")));
                 break;
 
-            case Kieruneczek.Lewo:
-                Dispatcher.Invoke(() => (e.SamochodzikZmienajacyKierunek.SamochodzikImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodLewo.png")));
+            case Direction.Left:
+                Dispatcher.Invoke(() => (e.directionChanegCar.CarImage as Image).Source = new BitmapImage(new Uri("pack://application:,,,/items/samochodLewo.png")));
                 break;
         }
-        /*Dispatcher.Invoke(() =>
-        {
-            tloDroga.Children.Add(e.SamochodzikZmienajacyKierunek.SamochodzikImage);
-            Canvas.SetLeft(e.SamochodzikZmienajacyKierunek.SamochodzikImage, e.SamochodzikZmienajacyKierunek.X);
-            Canvas.SetTop(e.SamochodzikZmienajacyKierunek.SamochodzikImage, e.SamochodzikZmienajacyKierunek.Y);
-        });*/
     }
-    private void SamochodzikJedzie()
+    private void CarGoing()
     {
-        Samochodzik samochodzik = null;
+        Car car = null;
         while (_isMoving)
         {
-           Dispatcher.Invoke(()=> samochodzik = new Samochodzik());
-            samochodzik.KieruneczekZmienlSie += Samochodzik_KieruneczekZmienlSie;
+           Dispatcher.Invoke(()=> car = new Car());
+            car.DirectionHasChanged += CarDirectionHasChanged;
 
-            //Segment dodawania
-            while (!_samochodzikController.CzyMogeDodacSamochodzik(samochodzik))
+            while (!_carController.CanAddCar(car))
             {
                 Thread.Sleep(1000);
             }
-            _samochodzikController.DodawanieSamochodziku(samochodzik);
-
+            _carController.AddCar(car);
 
             Dispatcher.Invoke(() => 
             {
-                tloDroga.Children.Add(samochodzik.SamochodzikImage);
-                Canvas.SetLeft(samochodzik.SamochodzikImage,samochodzik.X);
-                Canvas.SetTop(samochodzik.SamochodzikImage,samochodzik.Y);
+                backgroundWay.Children.Add(car.CarImage);
+                Canvas.SetLeft(car.CarImage,car.X);
+                Canvas.SetTop(car.CarImage,car.Y);
             });
 
-            //Segment aktualizowania
-            while(_samochodzikController.AktualizacjaSamochodziku(samochodzik))
+            while(_carController.CarUpdate(car))
             {
 
                 Thread.Sleep(50);
                 Dispatcher.Invoke(() =>
                 {
-                    Canvas.SetLeft(samochodzik.SamochodzikImage, samochodzik.X);
-                    Canvas.SetTop(samochodzik.SamochodzikImage, samochodzik.Y);
+                    Canvas.SetLeft(car.CarImage, car.X);
+                    Canvas.SetTop(car.CarImage, car.Y);
                 });
             }
 
-            //Segment usuwania
-            if (_samochodzikController.UsuwankoSamchodziku(samochodzik))
+      
+            if (_carController.DeleteCar(car))
             {
-                Dispatcher.Invoke(() => { tloDroga.Children.Remove(samochodzik.SamochodzikImage); });
+                Dispatcher.Invoke(() => { backgroundWay.Children.Remove(car.CarImage); });
             }
         }
     }
@@ -150,33 +136,33 @@ public partial class MainWindow : Window
     {
         while (_isMoving)
         {
-            if (_ciufciufController.CiufCiuf is not null)
+            if (_trainController.Train is not null)
             {
 
-                if (_ciufciufController.CiufCiuf.X > -500 && _ciufciufController.CiufCiuf.X < 500)
+                if (_trainController.Train.X > -500 && _trainController.Train.X < 500)
                 {
-                    Swiatelka.SwiatelkaSwieca = true;
+                    TrafficLights.IsTrafficLightsOn = true;
 
                     Dispatcher.Invoke(() =>
                     {
-                        Switelko.Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor2.png"));
+                        Light.Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor2.png"));
                     });
 
                     Thread.Sleep(300);
 
                     Dispatcher.Invoke(() =>
                     {
-                        Switelko.Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor1.png"));
+                        Light.Source = new BitmapImage(new Uri("pack://application:,,,/items/semafor1.png"));
                     });
                     Thread.Sleep(300);
                 }
                 else
                 {
-                    Swiatelka.SwiatelkaSwieca = false;
+                    TrafficLights.IsTrafficLightsOn = false;
 
                     Dispatcher.Invoke(() =>
                     {
-                        Switelko.Source = new BitmapImage(new Uri("pack://application:,,,/items/semaforZgaszony.png"));
+                        Light.Source = new BitmapImage(new Uri("pack://application:,,,/items/semaforZgaszony.png"));
                     });
                 }
             }
@@ -189,13 +175,13 @@ public partial class MainWindow : Window
         while (_isMoving)
         {
             
-            if (Swiatelka.SwiatelkaSwieca)
+            if (TrafficLights.IsTrafficLightsOn)
             {
                 Thread.Sleep(1100);
                 Dispatcher.Invoke(() =>
                 {
-                    szlabanikGora.Source = new BitmapImage(new Uri("pack://application:,,,/items/szlabanZamkniety.png"));
-                    szlabanikDol.Source = new BitmapImage(new Uri("pack://application:,,,/items/szlabanZamkniety.png"));
+                    openBarrier.Source = new BitmapImage(new Uri("pack://application:,,,/items/szlabanZamkniety.png"));
+                    closeBarrier.Source = new BitmapImage(new Uri("pack://application:,,,/items/szlabanZamkniety.png"));
                 });
             }
             else
@@ -203,8 +189,8 @@ public partial class MainWindow : Window
                 Thread.Sleep(20);
                 Dispatcher.Invoke(() =>
                 {
-                    szlabanikGora.Source = new BitmapImage(new Uri("pack://application:,,,/items/szlabanOtwarty.png"));
-                    szlabanikDol.Source = new BitmapImage(new Uri("pack://application:,,,/items/szlabanOtwarty.png"));
+                    openBarrier.Source = new BitmapImage(new Uri("pack://application:,,,/items/szlabanOtwarty.png"));
+                    closeBarrier.Source = new BitmapImage(new Uri("pack://application:,,,/items/szlabanOtwarty.png"));
                 });
             }
         }
@@ -217,44 +203,42 @@ public partial class MainWindow : Window
     {
         if (_isMoving) return;
         _isMoving = true;
-        swiatelkaThread = new Thread(SygnalizacjaSwiatelkowa);
-        ciufciaThread = new Thread(CiufciaJedzie);
-        szlabanikThread = new Thread(ZamykanieSzlabanu);
-        //samochodzikThread = new Thread(SamochodzikJedzie);
-        //samochodzikThread.Start();
-        swiatelkaThread.Start();
-        ciufciaThread.Start();
-        szlabanikThread.Start();
-        samochodzikThread = new Thread[5];
+        lightsThread = new Thread(SygnalizacjaSwiatelkowa);
+        trainThread = new Thread(TrainGoing);
+        barrierThread = new Thread(ZamykanieSzlabanu);
+        lightsThread.Start();
+        trainThread.Start();
+        barrierThread.Start();
+        carThread = new Thread[5];
         for (int i = 0; i < 5; i++)
         {
-            samochodzikThread[i] = new Thread(SamochodzikJedzie);
-            samochodzikThread[i].Name = $"samochodzik {i + 1}";
-            samochodzikThread[i].Start();
+            carThread[i] = new Thread(CarGoing);
+            carThread[i].Name = $"samochodzik {i + 1}";
+            carThread[i].Start();
         }
     }
     private async void StopButton_Click(object sender, RoutedEventArgs e)
     {
-        await Task.Run(() => ciufciaThread?.Join());
+        await Task.Run(() => trainThread?.Join());
 
         var tasks = new Task[5];
         for (int i = 0; i < 5; i++)
         {
             int index = i; 
-            tasks[i] = Task.Run(() => samochodzikThread[index]?.Join());
+            tasks[i] = Task.Run(() => carThread[index]?.Join());
         }
 
         await Task.WhenAll(tasks);
 
-        await Task.Run(() => ciufciaThread?.Join());
+        await Task.Run(() => trainThread?.Join());
 
-        await Task.Run(() => szlabanikThread?.Join());
+        await Task.Run(() => barrierThread?.Join());
 
-        await Task.Run(() => swiatelkaThread?.Join());
+        await Task.Run(() => lightsThread?.Join());
 
         _isMoving = false;
 
-        Dispatcher.Invoke(() => { tloDroga.Children.Clear(); });
+        Dispatcher.Invoke(() => { backgroundWay.Children.Clear(); });
     }
     #endregion
 }

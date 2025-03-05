@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Projekcik.Controllers;
 
-public class CiufciufController
+public class TrainController
 {
-    public CiufCiuf CiufCiuf { get; set; }
+    public Train Train { get; set; }
 }
